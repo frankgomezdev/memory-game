@@ -1,8 +1,12 @@
 import { useState } from "react";
 import shuffle from 'lodash/shuffle'
+import Card from "./Card";
 
+interface MemoryGameProps {
+    images: string[];
+}
 
-function createInitialCards(images) {
+function createInitialCards(images : string[]) {
         const duplicatedImages = [...images, ...images]
         const cards = duplicatedImages.map((item, index) => {
             return {id: index, src: item, isMatched: false}
@@ -11,13 +15,14 @@ function createInitialCards(images) {
         return shuffledCards;
     }
 
-function MemoryGame({ images }) {
+function MemoryGame({ images }: MemoryGameProps){
     const [cards, setCards] = useState(() => createInitialCards(images))
-    const [flippedIds, setFlippedIds] = useState([])
+    const [flippedIds, setFlippedIds] = useState<number[]>([])
 
-    const handleClick = (id) => {
+    const handleClick = (id: number) => {
         const clickedCard = cards.find(card => card.id === id)
-        if(clickedCard?.isMatched) {
+        if (!clickedCard) return;
+        if(clickedCard.isMatched) {
             return null;
         } else if(flippedIds.includes(clickedCard.id)){
             return null;
@@ -28,8 +33,8 @@ function MemoryGame({ images }) {
             const firstCard = cards.find(card => card.id === flippedIds[0])
             const secondCard = clickedCard
             if(flippedIds.length == 1) {
-                if(firstCard.src === secondCard.src){
-                    setCards(cards.map(card => card.src == firstCard.src ? {...card, isMatched: true} : card))
+                if(firstCard?.src === secondCard?.src){
+                    setCards(cards.map(card => card.src == firstCard?.src ? {...card, isMatched: true} : card))
                     setFlippedIds([])
                 } else {
                 setTimeout(() => {
@@ -41,7 +46,7 @@ function MemoryGame({ images }) {
     }
 
     return (
-        <div>
+        <div className="game-container">
         {cards.map((card) => (
             <Card key={card.id} id={card.id} src={card.src} isMatched={card.isMatched} isFlipped={flippedIds.includes(card.id)} onClick={handleClick}/>
            
